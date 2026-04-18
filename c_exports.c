@@ -9,7 +9,7 @@ int c_puts(char * str) {
 	return puts(str);
 }
 
-#include <SDL2/SDL.h>
+SDL_Renderer *g_rend = NULL;
 
 int sdl_init (void) {
   return SDL_Init(SDL_INIT_VIDEO) == 0 ? 0 : -1;
@@ -30,6 +30,26 @@ SDL_Window *sdl_create_window (const char *title, int w, int h) {
 
 void sdl_destroy_window (SDL_Window *win) {
   SDL_DestroyWindow(win);
+}
+
+int create_renderer (SDL_Window *win) {
+  g_rend = SDL_CreateRenderer(win, -1, 0);
+  return g_rend ? 0 : -1;
+}
+
+void clear_renderer (void) {
+  SDL_SetRenderDrawColor(g_rend, 0x00, 0x00, 0x00, 0xFF);  // чёрный
+  SDL_RenderClear(g_rend);
+}
+
+void fill_rect (int x, int y, int w, int h, Uint8 r, Uint8 g, Uint8 b) {
+  SDL_Rect rect = {x, y, w, h};
+  SDL_SetRenderDrawColor(g_rend, r, g, b, 0xFF);
+  SDL_RenderFillRect(g_rend, &rect);
+}
+
+void present_renderer (void) {
+  SDL_RenderPresent(g_rend);
 }
 
 int sdl_poll_event (SDL_Event *ev) {
@@ -79,3 +99,8 @@ void sdl_print_key_down (SDL_Event *ev) {
     printf("\n");
   }
 }
+
+Uint32 get_sdlk_up   (void) { return SDLK_UP; }
+Uint32 get_sdlk_down (void) { return SDLK_DOWN; }
+Uint32 get_sdlk_left (void) { return SDLK_LEFT; }
+Uint32 get_sdlk_right(void) { return SDLK_RIGHT; }

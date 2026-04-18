@@ -58,7 +58,41 @@ struct
     _import "sdl_print_key_down"
       private: event -> unit;
 
+  val create_renderer =
+    _import "create_renderer"
+      private: MLton.Pointer.t -> int;
+
+  val clear_renderer =
+    _import "clear_renderer"
+      private: unit -> unit;
+
+  val fill_rect =
+    _import "fill_rect"
+      private: int * int * int * int * int * int * int -> unit;
+
+  val present_renderer =
+    _import "present_renderer"
+      private: unit -> unit;
+
+  val get_sdlk_up =
+    _import "get_sdlk_up": unit -> keycode;
+
+  val get_sdlk_down =
+    _import "get_sdlk_down": unit -> keycode;
+
+  val get_sdlk_left =
+    _import "get_sdlk_left": unit -> keycode;
+
+  val get_sdlk_right =
+    _import "get_sdlk_right": unit -> keycode;
+
   (* SDL_QuitEvent type code *)
   val SDL_QUIT : uint32 = 0wx2401
   val SDL_KEYDOWN : uint32 = 0wx300
+  val SDL_KEYUP : uint32 = 0wx301
+  val SDLK_UP   = get_sdlk_up   () : keycode
+  val SDLK_DOWN = get_sdlk_down () : keycode
+  val SDLK_LEFT = get_sdlk_left () : keycode
+  val SDLK_RIGHT= get_sdlk_right() : keycode
+
 end
