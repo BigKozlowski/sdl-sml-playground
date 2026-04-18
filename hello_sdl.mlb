@@ -1,0 +1,9 @@
+ann "allowFFI true" in
+    $(SML_LIB)/basis/mlton.mlb
+    $(SML_LIB)/basis/basis.mlb
+    c_imports.sml
+    sdl.sml
+    stringmap.sml
+    argparse.sml
+    hello_sdl.sml
+end

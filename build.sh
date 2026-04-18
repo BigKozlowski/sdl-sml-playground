@@ -1,0 +1,1 @@
+mlton -default-ann 'allowFFI true' -link-opt '-lSDL2' hello_sdl.mlb c_exports.c
