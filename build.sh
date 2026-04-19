@@ -1,5 +1,5 @@
-SDL_CFLAGS=$(pkg-config --cflags SDL2)
-SDL_LIBS=$(pkg-config --libs SDL2)
+SDL_CFLAGS=$(pkg-config --cflags sdl2)
+SDL_LIBS=$(pkg-config --libs sdl2)
 
 echo "SDL_CFLAGS: $SDL_CFLAGS"
 echo "SDL_LIBS: $SDL_LIBS"
