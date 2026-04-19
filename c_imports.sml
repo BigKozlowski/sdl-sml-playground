@@ -86,6 +86,9 @@ struct
   val get_sdlk_right =
     _import "get_sdlk_right": unit -> keycode;
 
+  val get_sdlk_q = 
+    _import "get_sdlk_q": unit -> keycode;
+
   (* SDL_QuitEvent type code *)
   val SDL_QUIT : uint32 = 0wx2401
   val SDL_KEYDOWN : uint32 = 0wx300
@@ -94,5 +97,6 @@ struct
   val SDLK_DOWN = get_sdlk_down () : keycode
   val SDLK_LEFT = get_sdlk_left () : keycode
   val SDLK_RIGHT= get_sdlk_right() : keycode
+  val SDLK_Q = get_sdlk_q(): keycode
 
 end

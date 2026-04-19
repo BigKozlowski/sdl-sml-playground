@@ -104,3 +104,4 @@ Uint32 get_sdlk_up   (void) { return SDLK_UP; }
 Uint32 get_sdlk_down (void) { return SDLK_DOWN; }
 Uint32 get_sdlk_left (void) { return SDLK_LEFT; }
 Uint32 get_sdlk_right(void) { return SDLK_RIGHT; }
+Uint32 get_sdlk_q(void) { return SDLK_q; }

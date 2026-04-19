@@ -31,6 +31,11 @@ structure Sml_sdl = struct
             ()
           end
 
+        fun handle_quit(code: SDL.keycode): unit =
+          if code = SDL.SDLK_Q
+          then (OS.Process.exit OS.Process.success)
+          else ()
+
         fun moveKey (code : SDL.keycode, x, y) : int * int =
           (print (Word32.toString code);
           print "\n";
@@ -71,6 +76,7 @@ structure Sml_sdl = struct
                 else if t = SDL.SDL_KEYDOWN
                 then
                   let
+                    val _ = handle_quit(k)
                     val (x', y') = moveKey (k, x, y)
                   in
                     (* print "KEYDOWN: "; SDL.print_key_down ev; print "\n"; *)

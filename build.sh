@@ -1,1 +1,7 @@
-mlton -default-ann 'allowFFI true' -link-opt '-lSDL2' hello_sdl.mlb c_exports.c
+SDL_CFLAGS=$(pkg-config --cflags SDL2)
+SDL_LIBS=$(pkg-config --libs SDL2)
+
+echo "SDL_CFLAGS: $SDL_CFLAGS"
+echo "SDL_LIBS: $SDL_LIBS"
+
+mlton -default-ann 'allowFFI true' -cc-opt "$SDL_CFLAGS" -link-opt "$SDL_LIBS" hello_sdl.mlb c_exports.c
