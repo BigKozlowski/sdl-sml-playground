@@ -1,6 +1,8 @@
 ann "allowFFI true" in
     $(SML_LIB)/basis/mlton.mlb
     $(SML_LIB)/basis/basis.mlb
+    $(SML_LIB)/smlnj-lib/Util/smlnj-lib.mlb
+    $(SML_LIB)/smlnj-lib/JSON/json-lib.mlb
     c_imports.sml
     sdl.sml
     stringmap.sml

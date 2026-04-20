@@ -3,6 +3,7 @@ struct
   type window   = MLton.Pointer.t
   type event    = MLton.Pointer.t
   type uint32   = Word32.word
+  type uint8    = Word8.word
   type scancode = Word32.word
   type keycode  = Word32.word
 
@@ -25,6 +26,10 @@ struct
   val pollEvent =
     _import "sdl_poll_event"
       private: event -> int;  (* 0 = no event, 1 = event *)
+
+  val sdlIsRepeatEvent =
+    _import "sdl_is_repeat_event"
+      private: event -> uint8;
 
   val getEventType =
     _import "sdl_get_event_type"
@@ -93,6 +98,7 @@ struct
   val SDL_QUIT : uint32 = 0wx2401
   val SDL_KEYDOWN : uint32 = 0wx300
   val SDL_KEYUP : uint32 = 0wx301
+  val SDL_NON_REPEAT : uint8 = 0wx0
   val SDLK_UP   = get_sdlk_up   () : keycode
   val SDLK_DOWN = get_sdlk_down () : keycode
   val SDLK_LEFT = get_sdlk_left () : keycode

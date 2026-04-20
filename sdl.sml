@@ -1,4 +1,9 @@
+
+
 structure Sml_sdl = struct
+    type Keys = { up: bool, down: bool, left: bool, right: bool }
+    datatype KeyEvent = PRESS | RELEASE
+    val initKeys: Keys = { up = false, down = false, left = false, right = false }
   fun main () : unit =
     if SDL.init () <> 0
     then print "SDL init failed.\n"
@@ -31,25 +36,41 @@ structure Sml_sdl = struct
             ()
           end
 
-        fun handle_quit(code: SDL.keycode): unit =
+        fun handleQuit(code: SDL.keycode): unit =
           if code = SDL.SDLK_Q
           then (OS.Process.exit OS.Process.success)
           else ()
 
-        fun moveKey (code : SDL.keycode, x, y) : int * int =
-          (print (Word32.toString code);
-          print "\n";
-          if code = SDL.SDLK_UP
-          then (x, Int.max (y - 10, 0))
-          else if code = SDL.SDLK_DOWN
-          then (x, Int.min (y + 10, 480 - sz))
-          else if code = SDL.SDLK_LEFT
-          then (Int.max (x - 10, 0), y)
-          else if code = SDL.SDLK_RIGHT
-          then (Int.min (x + 10, 640 - sz), y)
-          else (x, y))
+        fun moveKey (keys : Keys, x, y) : int * int =
+            let
+                val dx = (if #left keys then ~10 else 0) + (if #right keys then 10 else 0)
+                val dy = (if #up   keys then ~10 else 0) + (if #down  keys then 10 else 0)
+            in
+                (Int.max (Int.min (x + dx, 640 - sz), 0),
+                Int.max (Int.min (y + dy, 480 - sz), 0))
+            end
 
-        fun pollEvents (x, y) : int * int =
+        fun updateKeys (k, keys : Keys, t) : Keys =
+            if t = PRESS
+            then
+(                print (Int.toString(Word.toInt k) ^ "\n");
+                if k = SDL.SDLK_UP    then { up = true, down = #down keys, left = #left keys, right = #right keys }
+                else if k = SDL.SDLK_DOWN  then { up = #up keys, down = true, left = #left keys, right = #right keys }
+                else if k = SDL.SDLK_LEFT  then { up = #up keys, down = #down keys, left = true, right = #right keys }
+                else if k = SDL.SDLK_RIGHT then { up = #up keys, down = #down keys, left = #left keys, right = true }
+                else keys)
+            else if t = RELEASE
+            then
+(                print (Int.toString(Word.toInt k) ^ "\n");
+                if k = SDL.SDLK_UP    then { up = false, down = #down keys, left = #left keys, right = #right keys }
+                else if k = SDL.SDLK_DOWN  then { up = #up keys, down = false, left = #left keys, right = #right keys }
+                else if k = SDL.SDLK_LEFT  then { up = #up keys, down = #down keys, left = false, right = #right keys }
+                else if k = SDL.SDLK_RIGHT then { up = #up keys, down = #down keys, left = #left keys, right = false }
+                else keys)
+            else
+                keys
+
+        fun pollEvents (keys: Keys, x, y) : Keys * int * int =
           let
             val ev  = SDL.mallocEvent ()
             val got = SDL.pollEvent ev
@@ -57,15 +78,15 @@ structure Sml_sdl = struct
             if got = 0
             then (
               SDL.freeEvent ev;
-              (x, y)
+              (keys, x, y)
             )
             else
               let
                 val t = SDL.getEventType ev
                 val k = SDL.getKeykeycode ev
+                val _ = handleQuit k
+                val r = SDL.sdlIsRepeatEvent ev
                 val _ = SDL.freeEvent ev
-                val _ = print (Int.toString(Word.toInt t))
-                val _ = print "\n"
               in
                 if t = SDL.SDL_QUIT orelse SDL.isQuit ev <> 0
                 then (
@@ -73,34 +94,52 @@ structure Sml_sdl = struct
                   print "Quit event.\n";
                   OS.Process.exit OS.Process.success
                 )
+                else if r <> SDL.SDL_NON_REPEAT
+                then
+                    let
+                        val (x', y') = moveKey (keys, x, y)
+                    in
+                        pollEvents(keys, x', y')
+                    end
                 else if t = SDL.SDL_KEYDOWN
                 then
                   let
-                    val _ = handle_quit(k)
-                    val (x', y') = moveKey (k, x, y)
+                    val keys' = updateKeys(k, keys, PRESS)
+                    val (x', y') = moveKey (keys', x, y)
                   in
-                    (* print "KEYDOWN: "; SDL.print_key_down ev; print "\n"; *)
-                    pollEvents (x', y')
+                    pollEvents (keys', x', y')
                   end
-                else (
-                  (* SDL.print_key_down ev; *)
-                  pollEvents (x, y)
-                )
+                else if t = SDL.SDL_KEYUP
+                then
+                  let
+                    val keys' = updateKeys(k, keys, RELEASE)
+                    val (x', y') = moveKey (keys', x, y)
+                  in
+                    pollEvents (keys', x', y')
+                  end
+                else 
+                    let
+                        val (x', y') = moveKey (keys, x, y)
+                    in
+                        (* SDL.print_key_down ev; *)
+                        pollEvents (keys, x', y')
+                    end
+                    
               end
           end
 
-        fun gameLoop (x, y) =
+        fun gameLoop (keys: Keys, x, y) =
           let
             val _ = SDL.delay 16
-            val (x', y') = pollEvents (x, y)
+            val (keys': Keys, x', y') = pollEvents (keys, x, y)
             (* val _ = print ("POS: " ^ Int.toString x' ^ ", " ^ Int.toString y' ^ "\n") *)
             val _ = renderFrame (x', y')
           in
-            gameLoop (x', y')
+            gameLoop (keys', x', y')
           end
       in
         renderFrame (x0, y0);
-        gameLoop (x0, y0);
+        gameLoop (initKeys, x0, y0);
         SDL.destroyWindow win;
         SDL.quit ()
       end

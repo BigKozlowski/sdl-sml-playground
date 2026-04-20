@@ -60,6 +60,10 @@ int sdl_get_event_type (SDL_Event *ev) {
   return ev->type;
 }
 
+int sdl_is_repeat_event(SDL_Event *ev) {
+  return ev->key.repeat;
+}
+
 int sdl_quit_event (SDL_Event *ev) {
   return ev->type == SDL_QUIT ? 1 : 0;
 }
