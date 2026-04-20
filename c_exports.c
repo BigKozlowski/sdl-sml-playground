@@ -53,7 +53,9 @@ void present_renderer (void) {
 }
 
 int sdl_poll_event (SDL_Event *ev) {
-  return SDL_PollEvent(ev);
+  SDL_Event* event = SDL_PollEvent(ev);
+  printf("%d, %d, %d\n", ev->type, ev->key.repeat, ev->key.keysym.sym);
+  return event;
 }
 
 int sdl_get_event_type (SDL_Event *ev) {
@@ -87,9 +89,7 @@ SDL_Scancode sdl_get_key_scancode (SDL_Event *ev) {
 }
 
 SDL_Keycode sdl_get_key_keycode (SDL_Event *ev) {
-  if (ev->type == SDL_KEYDOWN)
-    return ev->key.keysym.sym;
-  return 0;
+  return ev->key.keysym.sym;
 }
 
 void sdl_print_key_down (SDL_Event *ev) {
@@ -109,3 +109,4 @@ Uint32 get_sdlk_down (void) { return SDLK_DOWN; }
 Uint32 get_sdlk_left (void) { return SDLK_LEFT; }
 Uint32 get_sdlk_right(void) { return SDLK_RIGHT; }
 Uint32 get_sdlk_q(void) { return SDLK_q; }
+Uint32 get_sdl_quit(void) { return SDL_QUIT; }

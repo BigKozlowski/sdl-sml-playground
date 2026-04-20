@@ -35,6 +35,10 @@ struct
     _import "sdl_get_event_type"
       private: event -> uint32;
 
+  val getKeykeycode =
+    _import "sdl_get_key_keycode"
+      private: event -> keycode;
+
   val isQuit =
     _import "sdl_quit_event"
       private: event -> int;  (* 1 = quit, 0 = not quit *)
@@ -54,10 +58,6 @@ struct
   val getKeyScancode =
     _import "sdl_get_key_scancode"
       private: event -> scancode;
-
-  val getKeykeycode =
-    _import "sdl_get_key_keycode"
-      private: event -> keycode;
 
   val print_key_down =
     _import "sdl_print_key_down"
@@ -94,8 +94,14 @@ struct
   val get_sdlk_q = 
     _import "get_sdlk_q": unit -> keycode;
 
+    val get_sdl_quit =
+      _import "get_sdl_quit": unit -> uint32;
+
+  fun getEventDetails ev =
+    (getEventType ev, getKeykeycode ev, sdlIsRepeatEvent ev)
+
   (* SDL_QuitEvent type code *)
-  val SDL_QUIT : uint32 = 0wx2401
+  val SDL_QUIT : uint32 = get_sdl_quit () : uint32
   val SDL_KEYDOWN : uint32 = 0wx300
   val SDL_KEYUP : uint32 = 0wx301
   val SDL_NON_REPEAT : uint8 = 0wx0

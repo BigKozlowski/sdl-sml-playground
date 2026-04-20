@@ -53,24 +53,22 @@ structure Sml_sdl = struct
         fun updateKeys (k, keys : Keys, t) : Keys =
             if t = PRESS
             then
-(                print (Int.toString(Word.toInt k) ^ "\n");
                 if k = SDL.SDLK_UP    then { up = true, down = #down keys, left = #left keys, right = #right keys }
                 else if k = SDL.SDLK_DOWN  then { up = #up keys, down = true, left = #left keys, right = #right keys }
                 else if k = SDL.SDLK_LEFT  then { up = #up keys, down = #down keys, left = true, right = #right keys }
                 else if k = SDL.SDLK_RIGHT then { up = #up keys, down = #down keys, left = #left keys, right = true }
-                else keys)
+                else keys
             else if t = RELEASE
             then
-(                print (Int.toString(Word.toInt k) ^ "\n");
                 if k = SDL.SDLK_UP    then { up = false, down = #down keys, left = #left keys, right = #right keys }
                 else if k = SDL.SDLK_DOWN  then { up = #up keys, down = false, left = #left keys, right = #right keys }
                 else if k = SDL.SDLK_LEFT  then { up = #up keys, down = #down keys, left = false, right = #right keys }
                 else if k = SDL.SDLK_RIGHT then { up = #up keys, down = #down keys, left = #left keys, right = false }
-                else keys)
+                else keys
             else
                 keys
 
-        fun pollEvents (keys: Keys, x, y) : Keys * int * int =
+        fun pollEvents (keys: Keys, x, y) : Keys =
           let
             val ev  = SDL.mallocEvent ()
             val got = SDL.pollEvent ev
@@ -78,14 +76,15 @@ structure Sml_sdl = struct
             if got = 0
             then (
               SDL.freeEvent ev;
-              (keys, x, y)
+              keys
             )
             else
               let
-                val t = SDL.getEventType ev
-                val k = SDL.getKeykeycode ev
+                val (t, k, r) = SDL.getEventDetails ev
+                val _ = print ("t = 0x" ^ Int.fmt StringCvt.HEX (Word.toInt t) ^ 
+               "  k = 0x" ^ Int.fmt StringCvt.HEX (Word.toInt k) ^
+               "  r = " ^ Bool.toString (r <> SDL.SDL_NON_REPEAT) ^ "\n")
                 val _ = handleQuit k
-                val r = SDL.sdlIsRepeatEvent ev
                 val _ = SDL.freeEvent ev
               in
                 if t = SDL.SDL_QUIT orelse SDL.isQuit ev <> 0
@@ -95,44 +94,30 @@ structure Sml_sdl = struct
                   OS.Process.exit OS.Process.success
                 )
                 else if r <> SDL.SDL_NON_REPEAT
-                then
-                    let
-                        val (x', y') = moveKey (keys, x, y)
-                    in
-                        pollEvents(keys, x', y')
-                    end
+                then keys
                 else if t = SDL.SDL_KEYDOWN
                 then
                   let
                     val keys' = updateKeys(k, keys, PRESS)
-                    val (x', y') = moveKey (keys', x, y)
                   in
-                    pollEvents (keys', x', y')
+                    keys'
                   end
                 else if t = SDL.SDL_KEYUP
                 then
                   let
                     val keys' = updateKeys(k, keys, RELEASE)
-                    val (x', y') = moveKey (keys', x, y)
                   in
-                    pollEvents (keys', x', y')
+                    keys'
                   end
-                else 
-                    let
-                        val (x', y') = moveKey (keys, x, y)
-                    in
-                        (* SDL.print_key_down ev; *)
-                        pollEvents (keys, x', y')
-                    end
-                    
+                else keys   
               end
           end
 
         fun gameLoop (keys: Keys, x, y) =
           let
             val _ = SDL.delay 16
-            val (keys': Keys, x', y') = pollEvents (keys, x, y)
-            (* val _ = print ("POS: " ^ Int.toString x' ^ ", " ^ Int.toString y' ^ "\n") *)
+            val (keys': Keys) = pollEvents (keys, x, y)
+            val (x', y') = moveKey (keys, x, y)
             val _ = renderFrame (x', y')
           in
             gameLoop (keys', x', y')
