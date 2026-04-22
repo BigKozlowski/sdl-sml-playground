@@ -53,9 +53,9 @@ void present_renderer (void) {
 }
 
 int sdl_poll_event (SDL_Event *ev) {
-  SDL_Event* event = SDL_PollEvent(ev);
+  int gotEvent = SDL_PollEvent(ev);
   printf("%d, %d, %d\n", ev->type, ev->key.repeat, ev->key.keysym.sym);
-  return event;
+  return gotEvent;
 }
 
 int sdl_get_event_type (SDL_Event *ev) {
