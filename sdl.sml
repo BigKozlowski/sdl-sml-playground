@@ -81,9 +81,6 @@ structure Sml_sdl = struct
             else
               let
                 val (t, k, r) = SDL.getEventDetails ev
-                val _ = print ("t = 0x" ^ Int.fmt StringCvt.HEX (Word.toInt t) ^ 
-               "  k = 0x" ^ Int.fmt StringCvt.HEX (Word.toInt k) ^
-               "  r = " ^ Bool.toString (r <> SDL.SDL_NON_REPEAT) ^ "\n")
                 val _ = handleQuit k
                 val _ = SDL.freeEvent ev
               in

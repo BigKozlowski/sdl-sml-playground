@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
 
 int c_mult(int a, int b) {
 	return a * b;
@@ -54,7 +55,6 @@ void present_renderer (void) {
 
 int sdl_poll_event (SDL_Event *ev) {
   int gotEvent = SDL_PollEvent(ev);
-  printf("%d, %d, %d\n", ev->type, ev->key.repeat, ev->key.keysym.sym);
   return gotEvent;
 }
 
@@ -97,7 +97,6 @@ void sdl_print_key_down (SDL_Event *ev) {
     SDL_Keycode k = ev->key.keysym.sym;
     SDL_Scancode s = ev->key.keysym.scancode;
     const char *keyname = SDL_GetKeyName(k);
-    printf("KEYDOWN: key=%d, scancode=%d", (int) k, (int) s);
     if (keyname)
       printf(" (\"%s\")", keyname);
     printf("\n");
@@ -110,3 +109,38 @@ Uint32 get_sdlk_left (void) { return SDLK_LEFT; }
 Uint32 get_sdlk_right(void) { return SDLK_RIGHT; }
 Uint32 get_sdlk_q(void) { return SDLK_q; }
 Uint32 get_sdl_quit(void) { return SDL_QUIT; }
+
+
+
+// 1. Инициализация атрибутов OpenGL перед созданием окна
+void sdl_gl_setup (void) {
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+  SDL_GL_CONTEXT_MINOR_VERSION, 1; // Максимум для macOS
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+}
+
+// 2. Создание контекста OpenGL
+SDL_GLContext sdl_gl_create_context (SDL_Window *win) {
+  return SDL_GL_CreateContext(win);
+}
+
+// 3. Установка цвета очистки (аналог glClearColor)
+void gl_clear_color (float r, float g, float b, float a) {
+  glClearColor(r, g, b, a);
+}
+
+// 4. Очистка буфера экрана
+void gl_clear (void) {
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+// 5. Обмен буферами (аналог present)
+void sdl_gl_swap_window (SDL_Window *win) {
+  SDL_GL_SwapWindow(win);
+}
+
+// 6. Удаление контекста
+void sdl_gl_delete_context (SDL_GLContext ctx) {
+  SDL_GL_DeleteContext(ctx);
+}
