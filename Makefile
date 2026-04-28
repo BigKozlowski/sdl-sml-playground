@@ -13,11 +13,13 @@ ifeq ($(UNAME_S),Darwin)
     OPENGL_LIBS   := -framework OpenGL
 endif
 
+SML_FILES := $(wildcard *.sml) $(wildcard *.sig)
+
 .PHONY: clean all run show-flags
 
 all: hello_sdl
 
-hello_sdl: hello_sdl.mlb c_exports.c
+hello_sdl: hello_sdl.mlb c_exports.c $(SML_FILES)
 	mlton -default-ann 'allowFFI true' \
 	    -cc-opt '$(SDL_CFLAGS) $(OPENGL_CFLAGS)' \
 	    -link-opt '$(SDL_LIBS) $(OPENGL_LIBS)' \
