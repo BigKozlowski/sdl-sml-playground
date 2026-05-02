@@ -38,7 +38,7 @@ lib:
 	mlton -default-ann 'allowFFI true' -format library -libname test test.sml
 
 opengl_test: opengl_test.c
-	gcc `pkg-config --cflags sdl2` opengl_test.c -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo `sdl2-config --libs`
+	gcc $(SDL_CFLAGS) $(OPENGL_CFLAGS) opengl_test.c $(SDL_LIBS) $(OPENGL_LIBS)
 
 clean:
 	rm -f hello_sdl

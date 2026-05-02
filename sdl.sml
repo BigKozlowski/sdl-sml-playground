@@ -1,4 +1,5 @@
-
+val width = 1600
+val height = 900
 
 structure Sml_sdl = struct
     type Keys = { up: bool, down: bool, left: bool, right: bool }
@@ -10,7 +11,7 @@ structure Sml_sdl = struct
     else
       let
         val win =
-          SDL.createWindow ("MLton SDL2 Event Loop", 640, 480)
+          SDL.createWindow ("MLton SDL2 Event Loop", width, height)
           handle _ => (
             print "SDL_CreateWindow failed.\n";
             OS.Process.exit OS.Process.failure
@@ -25,7 +26,7 @@ structure Sml_sdl = struct
 
         val x0 = 100
         val y0 = 100
-        val sz = 200
+        val sz = 50
 
         fun renderFrame (x, y) : unit =
           let
@@ -46,8 +47,8 @@ structure Sml_sdl = struct
                 val dx = (if #left keys then ~10 else 0) + (if #right keys then 10 else 0)
                 val dy = (if #up   keys then ~10 else 0) + (if #down  keys then 10 else 0)
             in
-                (Int.max (Int.min (x + dx, 640 - sz), 0),
-                Int.max (Int.min (y + dy, 480 - sz), 0))
+                (Int.max (Int.min (x + dx, width - sz), 0),
+                Int.max (Int.min (y + dy, height - sz), 0))
             end
 
         fun updateKeys (k, keys : Keys, t) : Keys =
