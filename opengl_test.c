@@ -17,6 +17,20 @@ float tetrahedron_colors[4][3] = {
     {0, 1, 0},
     {0, 0, 1}};
 
+void drawGrid()
+{
+    glColor3f(1, 1, 1);
+    glBegin(GL_LINES);
+    for (float i = -2.5; i <= 2.5; i += 0.25)
+    {
+        glVertex3f(i, 0, 2.5);
+        glVertex3f(i, 0, -2.5);
+        glVertex3f(2.5, 0, i);
+        glVertex3f(-2.5, 0, i);
+    }
+    glEnd();
+}
+
 void drawTetra()
 {
     glBegin(GL_TRIANGLE_STRIP);
@@ -65,16 +79,7 @@ int main(int argc, char *argv[])
         glRotatef(angle / 2.0, 1, 0, 0);
 
         glClear(GL_COLOR_BUFFER_BIT);
-        glColor3f(1, 1, 1);
-        glBegin(GL_LINES);
-        for (float i = -2.5; i <= 2.5; i += 0.25)
-        {
-            glVertex3f(i, 0, 2.5);
-            glVertex3f(i, 0, -2.5);
-            glVertex3f(2.5, 0, i);
-            glVertex3f(-2.5, 0, i);
-        }
-        glEnd();
+        drawGrid();
         drawTetra();
         SDL_GL_SwapWindow(window);
     }
